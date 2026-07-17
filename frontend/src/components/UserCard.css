@@ -1,0 +1,171 @@
+.user-card {
+    background: white;
+    border-radius: 16px;
+    padding: 22px 25px;
+    margin: 14px 20px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    border: 1px solid rgba(0, 0, 0, 0.04);
+    position: relative;
+    overflow: hidden;
+}
+
+.user-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 4px;
+    height: 100%;
+    background: linear-gradient(180deg, #667eea 0%, #764ba2 100%);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.user-card:hover {
+    transform: translateX(4px) translateY(-2px);
+    box-shadow: 0 8px 25px rgba(102, 126, 234, 0.12);
+    border-color: rgba(102, 126, 234, 0.15);
+}
+
+.user-card:hover::before {
+    opacity: 1;
+}
+
+/* ===== AVATAR ===== */
+.user-avatar {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 28px;
+    flex-shrink: 0;
+    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+    transition: transform 0.3s ease;
+}
+
+.user-card:hover .user-avatar {
+    transform: scale(1.05) rotate(-3deg);
+}
+
+/* ===== USER INFO ===== */
+.user-info {
+    flex: 1;
+    min-width: 0;
+}
+
+.user-info h3 {
+    margin: 0;
+    font-size: 18px;
+    font-weight: 700;
+    color: #1a1a2e;
+    letter-spacing: -0.3px;
+}
+
+.user-email {
+    color: #6c6c8a;
+    margin: 4px 0;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.user-email::before {
+    content: '✉️';
+    font-size: 12px;
+}
+
+.user-age {
+    color: #667eea;
+    font-weight: 600;
+    margin: 4px 0;
+    font-size: 14px;
+}
+
+.user-age::before {
+    content: '🎂 ';
+    font-weight: 400;
+}
+
+.user-date {
+    color: #a0a0b8;
+    font-size: 12px;
+    margin: 4px 0;
+    font-weight: 400;
+}
+
+/* ===== ACTIONS ===== */
+.user-actions {
+    display: flex;
+    gap: 10px;
+    flex-shrink: 0;
+}
+
+.user-actions button {
+    padding: 10px 18px;
+    border: none;
+    border-radius: 12px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.btn-edit {
+    background: rgba(102, 126, 234, 0.1);
+    color: #667eea;
+}
+
+.btn-edit:hover {
+    background: rgba(102, 126, 234, 0.2);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.2);
+}
+
+.btn-delete {
+    background: rgba(231, 76, 60, 0.1);
+    color: #e74c3c;
+}
+
+.btn-delete:hover {
+    background: rgba(231, 76, 60, 0.2);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(231, 76, 60, 0.2);
+}
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 640px) {
+    .user-card {
+        flex-wrap: wrap;
+        padding: 18px;
+        margin: 10px 12px;
+    }
+
+    .user-avatar {
+        width: 50px;
+        height: 50px;
+        font-size: 22px;
+    }
+
+    .user-actions {
+        width: 100%;
+        justify-content: flex-end;
+        margin-top: 8px;
+    }
+
+    .user-actions button {
+        padding: 8px 14px;
+        font-size: 12px;
+    }
+}

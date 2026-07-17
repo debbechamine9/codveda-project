@@ -1,0 +1,161 @@
+/* ===== IMPORTS ===== */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+
+/* ===== RESET & GLOBAL ===== */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+    min-height: 100vh;
+}
+
+.app {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 30px 20px;
+}
+
+/* ===== HEADER ===== */
+.app-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 25px 35px;
+    background: rgba(255, 255, 255, 0.85);
+    backdrop-filter: blur(20px);
+    border-radius: 20px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
+    margin-bottom: 30px;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    transition: transform 0.3s ease;
+}
+
+.app-header:hover {
+    transform: translateY(-2px);
+}
+
+.app-header h1 {
+    font-size: 28px;
+    font-weight: 800;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    letter-spacing: -0.5px;
+}
+
+/* ===== BOUTON ADD USER - VERSION CHIC ===== */
+.add-user-button {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border: none;
+    padding: 14px 28px;
+    border-radius: 12px;
+    font-size: 16px;
+    font-weight: 600;
+    font-family: 'Inter', sans-serif;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+    letter-spacing: 0.3px;
+    position: relative;
+    overflow: hidden;
+}
+
+.add-user-button::after {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: conic-gradient(
+        transparent,
+        rgba(255, 255, 255, 0.15),
+        transparent 30%
+    );
+    animation: rotateGlow 6s linear infinite;
+    opacity: 0;
+    transition: opacity 0.5s ease;
+}
+
+.add-user-button:hover::after {
+    opacity: 1;
+}
+
+@keyframes rotateGlow {
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+.add-user-button:hover {
+    transform: translateY(-2px) scale(1.02);
+    box-shadow: 0 8px 30px rgba(102, 126, 234, 0.5);
+}
+
+.add-user-button:active {
+    transform: scale(0.96);
+}
+
+.add-user-button svg {
+    font-size: 18px;
+    transition: transform 0.3s ease;
+    position: relative;
+    z-index: 1;
+}
+
+.add-user-button:hover svg {
+    transform: rotate(90deg);
+}
+
+.add-user-button span {
+    position: relative;
+    z-index: 1;
+}
+
+/* ===== MAIN CONTENT ===== */
+.app-main {
+    background: rgba(255, 255, 255, 0.7);
+    backdrop-filter: blur(10px);
+    border-radius: 24px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    overflow: hidden;
+    padding: 0;
+}
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 768px) {
+    .app {
+        padding: 15px;
+    }
+
+    .app-header {
+        flex-direction: column;
+        gap: 15px;
+        padding: 20px;
+        text-align: center;
+    }
+
+    .app-header h1 {
+        font-size: 22px;
+    }
+
+    .add-user-button {
+        width: 100%;
+        justify-content: center;
+        padding: 12px 20px;
+    }
+}

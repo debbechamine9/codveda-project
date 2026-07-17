@@ -3,15 +3,19 @@ const mongoose = require('mongoose');
 const User = require('./models/User');
 const express = require('express');
 const app = express();
-const port = 3000;
+const cors = require('cors');
+const port = process.env.PORT || 3000;
 
 app.use(express.json());
- mongoose.connect(process.env.MONGODB_URI)
- .then(() => console.log('Connected to MongoDB'))
- .catch((err) => {
-        console.error('Error connecting to MongoDB:', err);
+app.use(cors());
+
+mongoose.connect(process.env.MONGODB_URI)
+    .then(() => console.log('✅ Connected to MongoDB'))
+    .catch((err) => {
+        console.error('❌ Error connecting to MongoDB:', err);
         process.exit(1);
     });
+
    app.get('/users', async (req, res) => {
     try {
         const users = await User.find();
@@ -86,6 +90,8 @@ app.use(express.json());
         }
     });
     app.put('/users/:id', async (req, res) => {
+        console.log('PUT request received for ID:', req.params.id);
+        console.log('Request body:', req.body);
     try {
         const { name, email, age } = req.body;
         if (email) {
