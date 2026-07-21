@@ -1,59 +1,109 @@
-import React, {useState} from 'react';
+import React, { useState, useEffect } from 'react';
 import UserList from './components/UserList';
 import UserForm from './components/UserForm';
-import {FaUserPlus} from 'react-icons/fa';
+import Login from './components/Login';
+import Register from './components/Register';
+import { FaUserPlus } from 'react-icons/fa';
 import './App.css';
 
 function App() {
-  const [showForm, setShowForm] = useState(false);
-  const [editingUser, setEditingUser] = useState(null);
-  const [refreshList, setRefreshKey] = useState(0);
+    const [isAuthenticated, setIsAuthenticated] = useState(false);
+    const [currentUser, setCurrentUser] = useState(null);
+    const [showForm, setShowForm] = useState(false);
+    const [editingUser, setEditingUser] = useState(null);
+    const [refreshKey, setRefreshKey] = useState(0);
+    const [showRegister, setShowRegister] = useState(false);
 
-  const handleEdit = (user) => {
-    setEditingUser(user);
-    setShowForm(true);
-  };
+    useEffect(() => {
+        const token = localStorage.getItem('token');
+        const storedUser = localStorage.getItem('user');
+        if (token && storedUser) {
+            setIsAuthenticated(true);
+            setCurrentUser(JSON.parse(storedUser));
+        }
+    }, []);
 
-  const handleFormSuccess = () => {
-    setShowForm(false);
-    setEditingUser(null);
-    setRefreshKey(prev => prev + 1); 
-  };
+    const handleLogin = (userData) => {
+        setIsAuthenticated(true);
+        setCurrentUser(userData);
+    };
 
-  const handleFormCancel = () => {
-    setShowForm(false);
-    setEditingUser(null);
-  };
+    const handleLogout = () => {
+        localStorage.removeItem('token');
+        localStorage.removeItem('user');
+        setIsAuthenticated(false);
+        setCurrentUser(null);
+    };
 
-  return (
-    <div className="app">
-      <header className="app-header">
-        <h1>User Management</h1>
-        <button 
-        className="add-user-button"
-        onClick={() => {
-          setEditingUser(null);
-          setShowForm(true);
-        }}
-      >
-        <FaUserPlus /> Add User
-      </button>
-    </header>
-      <main className="app-main">
-        {showForm && (
-          <UserForm
-            user={editingUser}
-            onSuccess={handleFormSuccess}
-            onCancel={handleFormCancel}
-          />
-        )}
-      <UserList
-      onEdit={handleEdit}
-      refresh={refreshList}
-      />
-      </main>
-      </div>
-  );
+    const handleEdit = (user) => {
+        setEditingUser(user);
+        setShowForm(true);
+    };
+
+    const handleFormSuccess = () => {
+        setShowForm(false);
+        setEditingUser(null);
+        setRefreshKey(prev => prev + 1);
+    };
+
+    const handleFormCancel = () => {
+        setShowForm(false);
+        setEditingUser(null);
+    };
+
+    if (!isAuthenticated) {
+        if (showRegister) {
+            return <Register onSwitchToLogin={() => setShowRegister(false)} />;
+        }
+        return <Login onLogin={handleLogin} onSwitchToRegister={() => setShowRegister(true)} />;
+    }
+
+    const isAdmin = currentUser?.role === 'admin';
+
+    return (
+        <div className="app">
+            <header className="app-header">
+                <div className="header-left">
+                    <h1> User Management</h1>
+                    <span className="user-badge"> {currentUser?.name}</span>
+                    {isAdmin && <span className="admin-badge"> Admin</span>}
+                </div>
+                <div className="header-right">
+                    {isAdmin && (
+                        <button
+                            className="add-user-button"
+                            onClick={() => {
+                                setEditingUser(null);
+                                setShowForm(true);
+                            }}
+                        >
+                            <FaUserPlus /> Add User
+                        </button>
+                    )}
+                    <button onClick={handleLogout} className="logout-button">
+                         Logout
+                    </button>
+                </div>
+            </header>
+
+            <main className="app-main">
+                {showForm && (
+                    <UserForm
+                        user={editingUser}
+                        onSuccess={handleFormSuccess}
+                        onCancel={handleFormCancel}
+                        currentUser={currentUser}
+                    />
+                )}
+
+                <UserList
+                    onEdit={handleEdit}
+                    refresh={refreshKey}
+                    currentUser={currentUser}
+                />
+            </main>
+        </div>
+    );
 }
 
 export default App;

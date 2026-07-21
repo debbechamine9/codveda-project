@@ -1,29 +1,35 @@
-import React, {useState, useEffect} from 'react';
-import {createUser, updateUser} from '../api/api';
+import React, { useState, useEffect } from 'react';
+import { createUser, updateUser } from '../api/api';
 import './UserForm.css';
 
-
-const UserForm = ({ user, onSuccess, onCancel }) => {
+const UserForm = ({ user, onSuccess, onCancel, currentUser }) => {
     const [formData, setFormData] = useState({
         name: '',
         email: '',
-        age: ''
-        
+        age: '',
+        password: ''
     });
-
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
 
-    useEffect(() => {   
-         console.log('📝 User received in the form:', user);
+    useEffect(() => {
         if (user) {
             setFormData({
                 name: user.name || '',
                 email: user.email || '',
-                age: user.age || ''
+                age: user.age || '',
+                password: ''
+            });
+        } else {
+            setFormData({
+                name: '',
+                email: '',
+                age: '',
+                password: ''
             });
         }
     }, [user]);
+
     const handleChange = (e) => {
         const { name, value } = e.target;
         setFormData(prev => ({
@@ -31,70 +37,74 @@ const UserForm = ({ user, onSuccess, onCancel }) => {
             [name]: value
         }));
     };
+
     const handleSubmit = async (e) => {
         e.preventDefault();
         setLoading(true);
         setError(null);
+
         try {
-             console.log(' Form data:', formData);
-              console.log('User to edit:', user);
             const data = {
                 name: formData.name,
                 email: formData.email,
-                age: parseInt(formData.age)
-
+                age: parseInt(formData.age) || 18
             };
+
+            if (formData.password && formData.password.length >= 6) {
+                data.password = formData.password;
+            }
+
             let response;
             if (user) {
-                console.log(`Updating user with ID: ${user._id}`);
                 response = await updateUser(user._id, data);
             } else {
+                if (!formData.password) {
+                    setError('Password is required for new users');
+                    setLoading(false);
+                    return;
+                }
                 response = await createUser(data);
             }
-            if (response.data.success){
+
+            if (response.data.success) {
+                alert(user ? 'User updated successfully!' : 'User created successfully!');
                 onSuccess();
             } else {
                 setError(response.data.message || 'Error during the operation');
             }
         } catch (err) {
-            console.error(err);
-            if (err.response && err.response.data) {
-                const errorData = err.response.data;
-            if (errorData.errors) {
-                setError(errorData.errors.join(', '));
-            } else {
-                setError(errorData.message || 'Error during the operation');
-            }
-            } else {
-                setError('Server connection error');
-            } 
+            console.error('Error:', err);
+            setError(err.response?.data?.message || 'Server connection error');
         } finally {
             setLoading(false);
         }
     };
 
-    return ( 
+    return (
         <form className="user-form" onSubmit={handleSubmit}>
             <h3>{user ? 'Edit User' : 'Create User'}</h3>
+
             {error && (
                 <div className="form-error">
                     <p>{error}</p>
-                </div>      
+                </div>
             )}
+
             <div className="form-group">
-                <label>Name*</label>
+                <label>Name *</label>
                 <input
                     type="text"
                     name="name"
                     value={formData.name}
                     onChange={handleChange}
-                    required    
+                    required
                     placeholder="Enter name"
-                    minlength={3}
-                    />
+                    minLength={3}
+                />
             </div>
+
             <div className="form-group">
-                <label>Email*</label>
+                <label>Email *</label>
                 <input
                     type="email"
                     name="email"
@@ -104,6 +114,7 @@ const UserForm = ({ user, onSuccess, onCancel }) => {
                     placeholder="Enter email"
                 />
             </div>
+
             <div className="form-group">
                 <label>Age</label>
                 <input
@@ -111,23 +122,42 @@ const UserForm = ({ user, onSuccess, onCancel }) => {
                     name="age"
                     value={formData.age}
                     onChange={handleChange}
-                    required
                     placeholder="Enter age"
                     min="18"
                     max="120"
                 />
             </div>
+
+            <div className="form-group">
+                <label>
+                    {user ? 'New Password (optional)' : 'Password *'}
+                </label>
+                <input
+                    type="password"
+                    name="password"
+                    value={formData.password}
+                    onChange={handleChange}
+                    placeholder={user ? 'Enter new password (min 6 chars)' : 'Enter password (min 6 chars)'}
+                    minLength={6}
+                    required={!user}
+                />
+                {user && (
+                    <small style={{ color: '#6c6c8a', fontSize: '12px' }}>
+                        Leave empty to keep current password
+                    </small>
+                )}
+            </div>
+
             <div className="form-actions">
                 <button type="submit" disabled={loading} className="submit-button">
                     {loading ? 'Submitting...' : (user ? 'Update User' : 'Create User')}
                 </button>
                 <button type="button" onClick={onCancel} className="cancel-button">
                     Cancel
-                </button>   
-                </div>
-                </form>
+                </button>
+            </div>
+        </form>
     );
 };
 
 export default UserForm;
-          

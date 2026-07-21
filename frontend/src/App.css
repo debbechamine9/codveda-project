@@ -1,7 +1,5 @@
-/* ===== IMPORTS ===== */
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
 
-/* ===== RESET & GLOBAL ===== */
 * {
     margin: 0;
     padding: 0;
@@ -20,7 +18,6 @@ body {
     padding: 30px 20px;
 }
 
-/* ===== HEADER ===== */
 .app-header {
     display: flex;
     justify-content: space-between;
@@ -33,6 +30,43 @@ body {
     margin-bottom: 30px;
     border: 1px solid rgba(255, 255, 255, 0.3);
     transition: transform 0.3s ease;
+}
+.header-left {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.user-badge {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 6px 16px;
+    border-radius: 20px;
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.header-right {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.logout-button {
+    background: rgba(231, 76, 60, 0.1);
+    color: #e74c3c;
+    border: none;
+    padding: 12px 20px;
+    border-radius: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-size: 14px;
+}
+
+.logout-button:hover {
+    background: rgba(231, 76, 60, 0.2);
+    transform: translateY(-2px);
 }
 
 .app-header:hover {
@@ -49,7 +83,6 @@ body {
     letter-spacing: -0.5px;
 }
 
-/* ===== BOUTON ADD USER - VERSION CHIC ===== */
 .add-user-button {
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     color: white;
@@ -125,7 +158,6 @@ body {
     z-index: 1;
 }
 
-/* ===== MAIN CONTENT ===== */
 .app-main {
     background: rgba(255, 255, 255, 0.7);
     backdrop-filter: blur(10px);
@@ -136,7 +168,6 @@ body {
     padding: 0;
 }
 
-/* ===== RESPONSIVE ===== */
 @media (max-width: 768px) {
     .app {
         padding: 15px;

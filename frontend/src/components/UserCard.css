@@ -12,6 +12,38 @@
     position: relative;
     overflow: hidden;
 }
+.user-role {
+    font-size: 14px;
+    margin: 4px 0;
+}
+
+.role-admin {
+    color: #764ba2;
+    font-weight: 600;
+}
+
+.role-user {
+    color: #3498db;
+    font-weight: 600;
+}
+
+.admin-badge {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 4px 14px;
+    border-radius: 20px;
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.read-only-badge {
+    background: #f0f0f5;
+    color: #6c6c8a;
+    padding: 8px 16px;
+    border-radius: 12px;
+    font-size: 13px;
+    font-weight: 500;
+}
 
 .user-card::before {
     content: '';
@@ -35,7 +67,6 @@
     opacity: 1;
 }
 
-/* ===== AVATAR ===== */
 .user-avatar {
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     color: white;
@@ -55,7 +86,6 @@
     transform: scale(1.05) rotate(-3deg);
 }
 
-/* ===== USER INFO ===== */
 .user-info {
     flex: 1;
     min-width: 0;
@@ -102,7 +132,6 @@
     font-weight: 400;
 }
 
-/* ===== ACTIONS ===== */
 .user-actions {
     display: flex;
     gap: 10px;
@@ -144,7 +173,6 @@
     box-shadow: 0 4px 12px rgba(231, 76, 60, 0.2);
 }
 
-/* ===== RESPONSIVE ===== */
 @media (max-width: 640px) {
     .user-card {
         flex-wrap: wrap;

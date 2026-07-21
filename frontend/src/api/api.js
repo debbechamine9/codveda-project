@@ -1,27 +1,47 @@
 import axios from 'axios';
 
-const API_URL ='http://localhost:3000';
-
 const api = axios.create({
-    baseURL: API_URL,
     headers: {
         'Content-Type': 'application/json',
     },
 });
+
+api.interceptors.request.use(
+    (config) => {
+        const token = localStorage.getItem('token');
+        if (token) {
+            config.headers.Authorization = `Bearer ${token}`;
+        }
+        console.log(' Request:', config.method.toUpperCase(), config.url);
+        return config;
+    },
+    (error) => Promise.reject(error)
+);
+
 api.interceptors.response.use(
-    response => response,
-    error => {
-        console.error('API Error:', error.message);
-        if (error.code === 'ERR_NETWORK') {
-            console.error('⚠️ Impossible de se connecter au serveur. Vérifie que le backend tourne sur le port 3000.');
+    (response) => {
+        console.log(' Response:', response.status, response.config.url);
+        return response;
+    },
+    (error) => {
+        console.error(' API Error:', error.response?.status, error.response?.data);
+        if (error.response && error.response.status === 401) {
+            localStorage.removeItem('token');
+            localStorage.removeItem('user');
+            window.location.href = '/login';
         }
         return Promise.reject(error);
     }
 );
-export const getUsers = () => api.get('/users');    
+
+export const getUsers = () => api.get('/users');
 export const getUser = (id) => api.get(`/users/${id}`);
 export const createUser = (userData) => api.post('/users', userData);
 export const updateUser = (id, userData) => api.put(`/users/${id}`, userData);
-export const deleteUser = (id) => api.delete(`/users/${id}`);   
+export const deleteUser = (id) => api.delete(`/users/${id}`);
+export const getMe = () => api.get('/users/me');
+
+export const register = (userData) => api.post('/api/auth/register', userData);
+export const login = (userData) => api.post('/api/auth/login', userData);
 
 export default api;

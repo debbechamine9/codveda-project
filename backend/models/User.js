@@ -1,29 +1,45 @@
 const mongoose = require('mongoose');
-const userSchema = new mongoose.Schema({
+const bcrypt = require('bcryptjs');
+
+const UserSchema = new mongoose.Schema({
     name: {
         type: String,
-        required: [true, 'Name is required'],
+        required: true,
         trim: true,
-        minlength: [3, 'Name must be at least 3 characters long']
+        minlength: 3
     },
     email: {
         type: String,
-        required: [true, 'Email is required'],
+        required: true,
         unique: true,
         lowercase: true,
-        trim: true,
-        lowercase: true,
-        match: [/\S+@\S+\.\S+/, 'Email is invalid']
+        trim: true
+    },
+    password: {
+        type: String,
+        required: true,
+        minlength: 6
     },
     age: {
         type: Number,
-        min: [18, 'Age must be at least 18 years old'],
-        max: [120, 'Age must be at most 120 years old']
+        default: 18
     },
-    createdAt: {
-        type: Date,
-        default: Date.now
+    role: {
+        type: String,
+        enum: ['user', 'admin'],
+        default: 'user'
     }
+}, {
+    timestamps: true
 });
-const user = mongoose.model('User', userSchema);
-module.exports = user;
+
+UserSchema.methods.hashPassword = async function() {
+    const salt = await bcrypt.genSalt(10);
+    this.password = await bcrypt.hash(this.password, salt);
+};
+
+UserSchema.methods.comparePassword = async function(candidatePassword) {
+    return await bcrypt.compare(candidatePassword, this.password);
+};
+
+module.exports = mongoose.model('User', UserSchema);
