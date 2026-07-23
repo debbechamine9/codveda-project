@@ -3,7 +3,8 @@ import UserList from './components/UserList';
 import UserForm from './components/UserForm';
 import Login from './components/Login';
 import Register from './components/Register';
-import { FaUserPlus } from 'react-icons/fa';
+import Chat from './components/Chat';          // <-- ADDED
+import { FaUserPlus, FaSignOutAlt } from 'react-icons/fa';
 import './App.css';
 
 function App() {
@@ -64,9 +65,11 @@ function App() {
         <div className="app">
             <header className="app-header">
                 <div className="header-left">
-                    <h1> User Management</h1>
-                    <span className="user-badge"> {currentUser?.name}</span>
-                    {isAdmin && <span className="admin-badge"> Admin</span>}
+                    <h1>👥 User Management</h1>
+                    <span className="user-badge">
+                        {currentUser?.role === 'admin' ? '' : '👤'} {currentUser?.name}
+                    </span>
+                    {isAdmin && <span className="admin-badge">👑 Admin</span>}
                 </div>
                 <div className="header-right">
                     {isAdmin && (
@@ -81,7 +84,7 @@ function App() {
                         </button>
                     )}
                     <button onClick={handleLogout} className="logout-button">
-                         Logout
+                        <FaSignOutAlt /> Logout
                     </button>
                 </div>
             </header>
@@ -101,6 +104,9 @@ function App() {
                     refresh={refreshKey}
                     currentUser={currentUser}
                 />
+
+                {/* ===== ADD CHAT COMPONENT ===== */}
+                <Chat currentUser={currentUser} />
             </main>
         </div>
     );

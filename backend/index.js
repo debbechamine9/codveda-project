@@ -3,6 +3,8 @@ const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
 const jwt = require('jsonwebtoken');
+const http = require('http');              // <-- ADDED for WebSocket
+const socketIo = require('socket.io');     // <-- ADDED for WebSocket
 const User = require('./models/User');
 const { protect, admin, isOwnerOrAdmin } = require('./middleware/auth');
 
@@ -13,13 +15,13 @@ app.use(cors());
 app.use(express.json());
 
 mongoose.connect(process.env.MONGODB_URI)
-    .then(() => console.log(' Connected to MongoDB'))
+    .then(() => console.log('✅ Connected to MongoDB'))
     .catch(err => {
-        console.error(' MongoDB Error:', err.message);
+        console.error('❌ MongoDB Error:', err.message);
         process.exit(1);
     });
 
-
+// ===== AUTH ROUTES =====
 app.post('/api/auth/register', async (req, res) => {
     try {
         const { name, email, password, age } = req.body;
@@ -128,6 +130,7 @@ app.get('/api/auth/me', protect, async (req, res) => {
         });
     }
 });
+
 app.get('/users/me', protect, async (req, res) => {
     try {
         const user = await User.findById(req.user.id).select('-password');
@@ -149,7 +152,7 @@ app.get('/users/me', protect, async (req, res) => {
     }
 });
 
-
+// ===== USER ROUTES =====
 app.get('/users', protect, admin, async (req, res) => {
     try {
         const users = await User.find().select('-password');
@@ -334,31 +337,10 @@ app.delete('/users/:id', protect, admin, async (req, res) => {
     }
 });
 
-app.get('/users/me', protect, async (req, res) => {
-    try {
-        const user = await User.findById(req.user.id).select('-password');
-        if (!user) {
-            return res.status(404).json({
-                success: false,
-                message: 'User not found'
-            });
-        }
-        res.status(200).json({
-            success: true,
-            data: user
-        });
-    } catch (error) {
-        res.status(500).json({
-            success: false,
-            message: 'Internal server error'
-        });
-    }
-});
-
-
+// ===== ROOT ROUTE =====
 app.get('/', (req, res) => {
     res.json({
-        message: ' Codveda API with Authentication & Roles',
+        message: '🚀 Codveda API with Authentication & Roles & WebSocket',
         endpoints: {
             auth: {
                 register: 'POST /api/auth/register',
@@ -377,7 +359,83 @@ app.get('/', (req, res) => {
     });
 });
 
+// ============================================
+// 🟢 WEBSOCKET SERVER (Socket.io)
+// ============================================
 
-app.listen(port, () => {
-    console.log(` Server running on http://localhost:${port}`);
+// Create HTTP server
+const server = http.createServer(app);
+const io = socketIo(server, {
+    cors: {
+        origin: "http://localhost:3001",
+        methods: ["GET", "POST"],
+        credentials: true
+    }
+});
+
+// Store connected users
+const connectedUsers = {};
+
+io.on('connection', (socket) => {
+    console.log(`🔌 New user connected: ${socket.id}`);
+
+    // ===== USER JOINS =====
+    socket.on('join', (userData) => {
+        console.log(`📝 User joined: ${userData.name}`);
+        
+        connectedUsers[socket.id] = {
+            id: userData.id,
+            name: userData.name,
+            email: userData.email,
+            role: userData.role
+        };
+
+        // Notify all users
+        io.emit('userJoined', {
+            user: userData.name,
+            users: Object.values(connectedUsers)
+        });
+
+        // Send current users list to the new user
+        socket.emit('usersList', Object.values(connectedUsers));
+    });
+
+    // ===== SEND MESSAGE =====
+    socket.on('sendMessage', (data) => {
+        const message = {
+            ...data,
+            timestamp: new Date().toLocaleTimeString(),
+            id: socket.id
+        };
+        io.emit('receiveMessage', message);
+    });
+
+    // ===== TYPING INDICATOR =====
+    socket.on('typing', (data) => {
+        socket.broadcast.emit('userTyping', {
+            user: data.user,
+            isTyping: data.isTyping
+        });
+    });
+
+    // ===== USER DISCONNECTS =====
+    socket.on('disconnect', () => {
+        const user = connectedUsers[socket.id];
+        if (user) {
+            delete connectedUsers[socket.id];
+            io.emit('userLeft', {
+                user: user.name,
+                users: Object.values(connectedUsers)
+            });
+        }
+        console.log(`❌ User disconnected: ${socket.id}`);
+    });
+});
+
+// ============================================
+// 🚀 START SERVER
+// ============================================
+server.listen(port, () => {
+    console.log(`✅ Server running on http://localhost:${port}`);
+    console.log(`✅ WebSocket server ready`);
 });

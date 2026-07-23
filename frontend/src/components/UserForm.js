@@ -150,10 +150,10 @@ const UserForm = ({ user, onSuccess, onCancel, currentUser }) => {
 
             <div className="form-actions">
                 <button type="submit" disabled={loading} className="submit-button">
-                    {loading ? 'Submitting...' : (user ? 'Update User' : 'Create User')}
+                    {loading ? 'Submitting...' : (user ? '✏️Update User' : '✏️Create User')}
                 </button>
                 <button type="button" onClick={onCancel} className="cancel-button">
-                    Cancel
+                    ❌Cancel
                 </button>
             </div>
         </form>

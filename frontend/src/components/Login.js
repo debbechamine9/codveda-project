@@ -34,7 +34,7 @@ const Login = ({ onLogin, onSwitchToRegister }) => {
     return (
         <div className="login-container">
             <div className="login-card">
-                <h2> Login</h2>
+                <h2> 🔐Login</h2>
                 <p>Enter your credentials to access the dashboard</p>
 
                 {error && (

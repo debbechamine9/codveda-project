@@ -60,7 +60,7 @@ const Register = ({ onSwitchToLogin }) => {
     return (
         <div className="register-container">
             <div className="register-card">
-                <h2>Register</h2>
+                <h2>➕Register</h2>
                 <p>Create your account to get started</p>
 
                 {error && (

@@ -11,42 +11,22 @@ const UserList = ({ onEdit, refresh, currentUser }) => {
 
     const isAdmin = currentUser?.role === 'admin';
 
-    console.log('currentUser:', currentUser);
-    console.log('isAdmin:', isAdmin);
-
     const loadUsers = async () => {
         try {
             setLoading(true);
             setError(null);
-            
             if (isAdmin) {
-                console.log('Fetching all users (admin)');
+                // Admin: get all users
                 const response = await getUsers();
-                console.log('Response:', response.data);
                 setUsers(response.data.data || []);
             } else {
-                console.log('Fetching own profile (user)');
+                // Regular user: get only own profile
                 const response = await getMe();
-                console.log('Response:', response.data);
                 setUsers([response.data.data]);
             }
-        } catch (error) {
-            console.error('Load users error:', error);
-            console.error('Error response:', error.response?.data);
-            console.error('Error status:', error.response?.status);
-            
-            if (error.response?.status === 403) {
-                setError('You do not have permission to view all users. Showing your profile only.');
-                try {
-                    const meResponse = await getMe();
-                    setUsers([meResponse.data.data]);
-                    setError(null);
-                } catch (meError) {
-                    setError('Failed to load your profile.');
-                }
-            } else {
-                setError(error.response?.data?.message || 'Failed to load users. Please try again.');
-            }
+        } catch (err) {
+            console.error('Load users error:', err);
+            setError('Failed to fetch users. Please try again later.');
         } finally {
             setLoading(false);
         }
@@ -61,15 +41,13 @@ const UserList = ({ onEdit, refresh, currentUser }) => {
             alert('Only admins can delete users.');
             return;
         }
-
         if (window.confirm('Are you sure you want to delete this user?')) {
             try {
                 await deleteUser(id);
                 setUsers(users.filter((user) => user._id !== id));
-                alert('User deleted successfully!');
             } catch (error) {
-                console.error('Delete error:', error);
-                alert('Failed to delete user.');
+                alert('Failed to delete user. Please try again later.');
+                console.error(error);
             }
         }
     };
@@ -89,6 +67,7 @@ const UserList = ({ onEdit, refresh, currentUser }) => {
         return (
             <div className="empty-state">
                 <p>No users found.</p>
+                <p>Click the "Add User" button to create a new user.</p>
             </div>
         );
     }
@@ -96,8 +75,8 @@ const UserList = ({ onEdit, refresh, currentUser }) => {
     return (
         <div className="user-list">
             <div className="user-list-header">
-                <h2>👥 {isAdmin ? 'All Users' : 'My Profile'}</h2>
-                {isAdmin && <span className="admin-badge">Admin</span>}
+                <h2>{isAdmin ? 'User List' : 'My Profile'} ({users.length})</h2>
+                {isAdmin && <span className="admin-badge">👑 Admin</span>}
             </div>
             {users.map((user) => (
                 <UserCard
